@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4 x Bingo Admin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Page - 4 x Bingo</h1>
+    </header>
+    <main>
+        <form id="admin-form">
+            <label for="word-list">Words (comma-separated):</label>
+            <textarea id="word-list" rows="5"></textarea>
+            <label for="subtitle">Subtitle:</label>
+            <input type="text" id="subtitle">
+            <label for="footer-text">Footer Text:</label>
+            <input type="text" id="footer-text">
+            <button type="button" id="save-config">Save</button>
+        </form>
+    </main>
+    <script src="config.json" type="application/json"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
