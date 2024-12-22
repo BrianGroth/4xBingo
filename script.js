@@ -2,6 +2,8 @@ let config;
 const gridElement = document.getElementById("bingo-grid");
 const subtitleElement = document.getElementById("subtitle");
 const footerElement = document.getElementById("footer-text");
+const winMessageElement = document.getElementById("win-message");
+const winGridElement = document.getElementById("win-grid");
 
 fetch("config.json")
     .then((response) => response.json())
@@ -46,6 +48,10 @@ function addPhoto(cell, word) {
 function checkWin() {
     const images = gridElement.querySelectorAll("img");
     if (images.length === 4) {
-        document.body.innerHTML = `<h1>🎉 You Win! 🎉</h1>`;
+        // Populate win grid
+        winGridElement.innerHTML = gridElement.innerHTML;
+
+        // Show win message overlay
+        winMessageElement.style.display = "block";
     }
 }
