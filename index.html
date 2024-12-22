@@ -60,7 +60,7 @@
             position: relative;
             border: 2px solid #007BFF;
             border-radius: 8px;
-            height: 200px; /* Taller box */
+            height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -77,6 +77,7 @@
             height: 100%;
             object-fit: cover;
             border-radius: 8px;
+            cursor: pointer;
         }
 
         .grid div span {
@@ -137,13 +138,13 @@
 <body>
     <header>
         <h1>4 x Bingo</h1>
-        <p id="subtitle">Discover Australia in a fun new way!</p>
+        <p id="subtitle">Loading...</p>
     </header>
     <main>
         <div id="bingo-grid" class="grid"></div>
     </main>
     <footer>
-        <p id="footer-text">Discover Australia's wonders!</p>
+        <p id="footer-text">Loading...</p>
     </footer>
 
     <!-- Win Message Overlay -->
@@ -153,11 +154,21 @@
     </div>
 
     <script>
-        let config = {
-            "words": ["Kangaroo", "Koala", "Platypus", "Wombat", "Opera House", "Great Barrier Reef", "Uluru", "Sydney Harbour Bridge"],
-            "subtitle": "Discover Australia in a fun new way!",
-            "footer": "Discover Australia's wonders!"
-        };
+        let config;
+
+        async function loadConfig() {
+            try {
+                const response = await fetch("config.json");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                config = await response.json();
+                initializeGame();
+            } catch (error) {
+                console.error("Error loading config.json:", error);
+                alert("Failed to load configuration.");
+            }
+        }
 
         const gridElement = document.getElementById("bingo-grid");
         const subtitleElement = document.getElementById("subtitle");
@@ -192,12 +203,15 @@
                 reader.onload = () => {
                     const photoURL = reader.result;
 
-                    // Update the cell with the image and caption
+                    // Update the cell with the image, caption, and download functionality
                     cell.innerHTML = `
-                        <img src="${photoURL}" alt="${word}">
+                        <a href="${photoURL}" download="${word}-photo.jpg">
+                            <img src="${photoURL}" alt="${word}">
+                        </a>
                         <span>${word}</span>
                         <a href="${photoURL}" download="${word}-photo.jpg" class="save-photo">Save</a>
                     `;
+
                     checkWin();
                 };
                 reader.readAsDataURL(file);
@@ -217,7 +231,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            initializeGame();
+            loadConfig();
         });
     </script>
 </body>
