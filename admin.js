@@ -1,28 +1,30 @@
-let config;
-
-// Load JSON file when the page loads
 document.addEventListener("DOMContentLoaded", () => {
-    fetch("config.json")
-        .then((response) => response.json())
-        .then((data) => {
-            config = data;
-            displayCurrentJson(config);
-            initializeAdmin(config);
-        })
-        .catch((error) => console.error("Error loading config.json:", error));
+    loadConfig();
 });
 
-// Populate the admin form with current JSON data
-function initializeAdmin(config) {
+async function loadConfig() {
+    try {
+        const response = await fetch("config.json");
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const config = await response.json();
+        displayCurrentJson(config);
+        populateForm(config);
+    } catch (error) {
+        console.error("Error loading config.json:", error);
+    }
+}
+
+function populateForm(config) {
     document.getElementById("word-list").value = config.words.join(", ");
     document.getElementById("subtitle").value = config.subtitle;
     document.getElementById("footer-text").value = config.footer;
 
-    document.getElementById("save-config").addEventListener("click", saveConfig);
+    document.getElementById("save-config").addEventListener("click", () => saveConfig(config));
 }
 
-// Save the updated configuration and display it
-function saveConfig() {
+function saveConfig(config) {
     const updatedConfig = {
         words: document.getElementById("word-list").value.split(",").map((word) => word.trim()),
         subtitle: document.getElementById("subtitle").value,
@@ -32,13 +34,11 @@ function saveConfig() {
     displayUpdatedJson(updatedConfig);
 }
 
-// Display the current JSON configuration
 function displayCurrentJson(config) {
     const currentJsonElement = document.getElementById("current-json");
     currentJsonElement.textContent = JSON.stringify(config, null, 2);
 }
 
-// Display the updated JSON configuration
 function displayUpdatedJson(updatedConfig) {
     const updatedJsonElement = document.getElementById("updated-json");
     updatedJsonElement.textContent = JSON.stringify(updatedConfig, null, 2);
