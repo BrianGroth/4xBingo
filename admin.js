@@ -1,4 +1,5 @@
 let config;
+
 fetch("config.json")
     .then((response) => response.json())
     .then((data) => {
@@ -21,14 +22,9 @@ function saveConfig() {
         footer: document.getElementById("footer-text").value,
     };
 
-    const blob = new Blob([JSON.stringify(updatedConfig, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+    // Display updated JSON
+    const updatedJsonElement = document.getElementById("updated-json");
+    updatedJsonElement.textContent = JSON.stringify(updatedConfig, null, 2);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "config.json";
-    a.click();
-    URL.revokeObjectURL(url);
-
-    alert("Configuration saved. Upload the new config.json to your repository.");
+    alert("Configuration updated! Copy the JSON below and upload it to your GitHub app.");
 }
