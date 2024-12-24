@@ -96,7 +96,7 @@
             padding: 5px 10px;
             background-color: #007BFF;
             color: white;
-            text-decoration: none;
+            border: none;
             border-radius: 5px;
             font-size: 12px;
             cursor: pointer;
@@ -208,12 +208,13 @@
                     cell.innerHTML = `
                         <img src="${photoURL}" alt="${word}">
                         <span>${word}</span>
-                        <button class="save-photo" onclick="triggerDownload('${photoURL}', '${word}-photo.jpg')">Save</button>
+                        <button class="save-photo">Save</button>
                     `;
 
-                    // Prevent the save button from triggering the parent click event
-                    cell.querySelector(".save-photo").addEventListener("click", (e) => {
-                        e.stopPropagation();
+                    const saveButton = cell.querySelector(".save-photo");
+                    saveButton.addEventListener("click", (e) => {
+                        e.stopPropagation(); // Prevent triggering parent click event
+                        triggerDownload(photoURL, `${word}-photo.jpg`);
                     });
 
                     checkWin();
