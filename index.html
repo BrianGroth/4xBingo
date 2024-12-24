@@ -203,11 +203,11 @@
                 reader.onload = () => {
                     const photoURL = reader.result;
 
-                    // Update the cell with the image and caption
+                    // Update the cell with the image, caption, and download functionality
                     cell.innerHTML = `
-                        <img src="${photoURL}" alt="${word}" onclick="triggerDownload('${photoURL}', '${word}-photo.jpg')">
+                        <img src="${photoURL}" alt="${word}">
                         <span>${word}</span>
-                        <a href="${photoURL}" download="${word}-photo.jpg" class="save-photo">Save</a>
+                        <button class="save-photo" onclick="triggerDownload('${photoURL}', '${word}-photo.jpg')">Save</button>
                     `;
                     checkWin();
                 };
