@@ -100,6 +100,7 @@
             border-radius: 5px;
             font-size: 12px;
             cursor: pointer;
+            z-index: 1;
         }
 
         footer {
@@ -209,6 +210,12 @@
                         <span>${word}</span>
                         <button class="save-photo" onclick="triggerDownload('${photoURL}', '${word}-photo.jpg')">Save</button>
                     `;
+
+                    // Prevent the save button from triggering the parent click event
+                    cell.querySelector(".save-photo").addEventListener("click", (e) => {
+                        e.stopPropagation();
+                    });
+
                     checkWin();
                 };
                 reader.readAsDataURL(file);
