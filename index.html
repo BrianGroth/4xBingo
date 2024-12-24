@@ -225,12 +225,22 @@
         }
 
         function triggerDownload(url, filename) {
+            const blob = dataURItoBlob(url);
             const link = document.createElement("a");
-            link.href = url;
+            link.href = window.URL.createObjectURL(blob);
             link.download = filename;
-            document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
+        }
+
+        function dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(",")[1]);
+            const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: mimeString });
         }
 
         function checkWin() {
