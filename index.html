@@ -3,34 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Road Trip 4 x Bingo</title>
+    <title>4 x Bingo</title>
     <style>
-        /* Reset some default browser styles */
-        body, h1, h2, p, form, input, textarea, button {
+        body {
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-
-        /* Body styling */
-        body {
-            background-color: #f0f2f5;
-            color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            background-color: #001f3f; /* Very dark blue background */
+            color: white;
         }
 
-        /* Header styling */
         header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 20px;
-            width: 100%;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            width: 100%;
+            position: sticky;
+            top: 0;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         header h1 {
@@ -45,56 +40,12 @@
             color: #f0e68c;
         }
 
-        /* Main content styling */
         main {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-            margin-top: 20px;
-        }
-
-        /* Form styling */
-        form {
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-        }
-
-        label {
-            font-weight: bold;
-        }
-
-        input, textarea {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            align-items: center;
             width: 100%;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        /* Preformatted text styling */
-        pre {
-            background-color: #f4f4f9;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            white-space: pre-wrap;
         }
 
         .grid {
@@ -109,136 +60,202 @@
             position: relative;
             border: 2px solid #007BFF;
             border-radius: 8px;
-            height: 200px;
+            height: 200px; /* Taller box */
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+            font-size: 16px;
             cursor: pointer;
+            background-color: white;
+            color: #333;
+            text-align: center;
+            overflow: hidden;
         }
 
-        .grid div:hover {
-            transform: scale(1.05);
+        .grid div img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
         }
 
-        .grid input[type="file"] {
-            display: none;
-        }
-
-        .you-win {
+        .grid div span {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            color: red;
-            font-weight: bold;
-            animation: blink 1s infinite;
-            display: none;
+            bottom: 8px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 14px;
+            padding: 2px 5px;
+            border-radius: 5px;
         }
 
-        @keyframes blink {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0;
-            }
+        .grid div .save-photo {
+            position: absolute;
+            bottom: 30px;
+            right: 10px;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #001a33;
+            width: 100%;
+            position: sticky;
+            bottom: 0;
+            font-size: 14px;
+            color: #ddd;
+        }
+
+        /* You Win Modal */
+        #win-message {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+            z-index: 1000;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        #win-message .grid {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <header>
         <h1>4 x Bingo</h1>
-        <p id="subtitle">Enjoy your game!</p>
+        <p id="subtitle">Loading...</p>
     </header>
     <main>
-        <div class="grid">
-            <div>
-                <input type="file" accept="image/*" capture="camera">
-                <span>Box 1</span>
-            </div>
-            <div>
-                <input type="file" accept="image/*" capture="camera">
-                <span>Box 2</span>
-            </div>
-            <div>
-                <input type="file" accept="image/*" capture="camera">
-                <span>Box 3</span>
-            </div>
-            <div>
-                <input type="file" accept="image/*" capture="camera">
-                <span>Box 4</span>
-            </div>
-        </div>
-        <button id="save-button">Save</button>
-        <div class="you-win">You Win!</div>
+        <div id="bingo-grid" class="grid"></div>
     </main>
+    <footer>
+        <p id="footer-text">Loading...</p>
+    </footer>
+
+    <!-- Win Message Overlay -->
+    <div id="win-message">
+        🎉 You Win! 🎉
+        <div class="grid" id="win-grid"></div>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('config.json')
-                .then(response => response.json())
-                .then(data => {
-                    const words = data.words;
-                    const boxes = document.querySelectorAll('.grid div span');
-                    const shuffledWords = words.sort(() => 0.5 - Math.random()).slice(0, boxes.length);
-                    boxes.forEach((box, index) => box.textContent = shuffledWords[index]);
-                    document.getElementById('subtitle').textContent = data.subtitle;
-                });
+        let config;
 
-            document.querySelectorAll('.grid div').forEach(box => {
-                box.addEventListener('click', function() {
-                    const fileInput = this.querySelector('input[type="file"]');
-                    fileInput.click();
-                    fileInput.addEventListener('change', function() {
-                        const file = this.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                const img = document.createElement('img');
-                                img.src = e.target.result;
-                                img.style.maxWidth = '100%';
-                                img.style.maxHeight = '100%';
-                                box.innerHTML = '';
-                                box.appendChild(img);
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                });
-            });
-
-            // Win condition logic
-            const checkWinCondition = () => {
-                // Here you can implement your own win condition logic
-                // For example, if all boxes have images, display "You Win"
-                const boxes = document.querySelectorAll('.grid div img');
-                if (boxes.length === 4) {
-                    document.querySelector('.you-win').style.display = 'block';
+        async function loadConfig() {
+            try {
+                const response = await fetch("config.json");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-            };
+                config = await response.json();
+                initializeGame();
+            } catch (error) {
+                console.error("Error loading config.json:", error);
+                alert("Failed to load configuration.");
+            }
+        }
 
-            document.querySelectorAll('.grid div input[type="file"]').forEach(input => {
-                input.addEventListener('change', checkWinCondition);
+        const gridElement = document.getElementById("bingo-grid");
+        const subtitleElement = document.getElementById("subtitle");
+        const footerElement = document.getElementById("footer-text");
+        const winMessageElement = document.getElementById("win-message");
+        const winGridElement = document.getElementById("win-grid");
+
+        function initializeGame() {
+            const words = getRandomWords(config.words, 4);
+            subtitleElement.textContent = config.subtitle;
+            footerElement.textContent = config.footer;
+
+            words.forEach((word) => {
+                const cell = document.createElement("div");
+                cell.textContent = word;
+                cell.addEventListener("click", () => addPhoto(cell, word));
+                gridElement.appendChild(cell);
             });
-        });
+        }
 
-        document.getElementById('save-button').addEventListener('click', function() {
-            const data = {
-                boxes: Array.from(document.querySelectorAll('.grid div span')).map(box => ({ content: box.textContent }))
+        function getRandomWords(wordList, count) {
+            return wordList.sort(() => 0.5 - Math.random()).slice(0, count);
+        }
+
+        function addPhoto(cell, word) {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/*";
+            input.onchange = (event) => {
+                const file = event.target.files[0];
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const photoURL = reader.result;
+
+                    // Update the cell with the image, caption, and download functionality
+                    cell.innerHTML = `
+                        <img src="${photoURL}" alt="${word}">
+                        <span>${word}</span>
+                        <button class="save-photo">Save</button>
+                    `;
+
+                    const saveButton = cell.querySelector(".save-photo");
+                    saveButton.addEventListener("click", (e) => {
+                        e.stopPropagation(); // Prevent triggering parent click event
+                        triggerDownload(photoURL, `${word}-photo.jpg`);
+                    });
+
+                    checkWin();
+                };
+                reader.readAsDataURL(file);
             };
-            const json = JSON.stringify(data, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'bingo-config.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            input.click();
+        }
+
+        function triggerDownload(url, filename) {
+            const blob = dataURItoBlob(url);
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
+        function dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(",")[1]);
+            const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: mimeString });
+        }
+
+        function checkWin() {
+            const images = gridElement.querySelectorAll("img");
+            if (images.length === 4) {
+                // Populate win grid
+                winGridElement.innerHTML = gridElement.innerHTML;
+
+                // Show win message overlay
+                winMessageElement.style.display = "block";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadConfig();
         });
     </script>
 </body>
