@@ -3,29 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4 x Bingo</title>
+    <title>Raod Trip 4 x Bingo</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* Reset some default browser styles */
+        body, h1, h2, p, form, input, textarea, button {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Body styling */
+        body {
+            background-color: #f0f2f5;
+            color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            background-color: #001f3f; /* Very dark blue background */
-            color: white;
+            padding: 20px;
         }
 
+        /* Header styling */
         header {
-            text-align: center;
-            padding: 10px;
-            background-color: #007BFF;
+            background-color: #4CAF50;
             color: white;
+            padding: 20px;
             width: 100%;
-            position: sticky;
-            top: 0;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         header h1 {
@@ -40,12 +45,56 @@
             color: #f0e68c;
         }
 
+        /* Main content styling */
         main {
-            padding: 10px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        /* Form styling */
+        form {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             width: 100%;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Preformatted text styling */
+        pre {
+            background-color: #f4f4f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            white-space: pre-wrap;
         }
 
         .grid {
@@ -64,12 +113,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 16px;
-            cursor: pointer;
             background-color: white;
-            color: #333;
-            text-align: center;
-            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .grid div:hover {
+            transform: scale(1.05);
         }
 
         .grid div img {
@@ -139,7 +189,7 @@
 <body>
     <header>
         <h1>4 x Bingo</h1>
-        <p id="subtitle">Loading...</p>
+        <p id="subtitle">Enjoy your game!</p>
     </header>
     <main>
         <div id="bingo-grid" class="grid"></div>
