@@ -109,17 +109,43 @@
             position: relative;
             border: 2px solid #007BFF;
             border-radius: 8px;
-            height: 200px; /* Taller box */
+            height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
             background-color: white;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
+            cursor: pointer;
         }
 
         .grid div:hover {
             transform: scale(1.05);
+        }
+
+        .grid input[type="file"] {
+            display: none;
+        }
+
+        .you-win {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: red;
+            font-weight: bold;
+            animation: blink 1s infinite;
+            display: none;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -130,22 +156,78 @@
     </header>
     <main>
         <div class="grid">
-            <div>Box 1</div>
-            <div>Box 2</div>
-            <div>Box 3</div>
-            <div>Box 4</div>
+            <div>
+                <input type="file" accept="image/*" capture="camera">
+                <span>Box 1</span>
+            </div>
+            <div>
+                <input type="file" accept="image/*" capture="camera">
+                <span>Box 2</span>
+            </div>
+            <div>
+                <input type="file" accept="image/*" capture="camera">
+                <span>Box 3</span>
+            </div>
+            <div>
+                <input type="file" accept="image/*" capture="camera">
+                <span>Box 4</span>
+            </div>
         </div>
         <button id="save-button">Save</button>
+        <div class="you-win">You Win!</div>
     </main>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('config.json')
+                .then(response => response.json())
+                .then(data => {
+                    const words = data.words;
+                    const boxes = document.querySelectorAll('.grid div span');
+                    const shuffledWords = words.sort(() => 0.5 - Math.random()).slice(0, boxes.length);
+                    boxes.forEach((box, index) => box.textContent = shuffledWords[index]);
+                    document.getElementById('subtitle').textContent = data.subtitle;
+                });
+
+            document.querySelectorAll('.grid div').forEach(box => {
+                box.addEventListener('click', function() {
+                    const fileInput = this.querySelector('input[type="file"]');
+                    fileInput.click();
+                    fileInput.addEventListener('change', function() {
+                        const file = this.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.style.maxWidth = '100%';
+                                img.style.maxHeight = '100%';
+                                box.innerHTML = '';
+                                box.appendChild(img);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                });
+            });
+
+            // Win condition logic
+            const checkWinCondition = () => {
+                // Here you can implement your own win condition logic
+                // For example, if all boxes have images, display "You Win"
+                const boxes = document.querySelectorAll('.grid div img');
+                if (boxes.length === 4) {
+                    document.querySelector('.you-win').style.display = 'block';
+                }
+            };
+
+            document.querySelectorAll('.grid div input[type="file"]').forEach(input => {
+                input.addEventListener('change', checkWinCondition);
+            });
+        });
+
         document.getElementById('save-button').addEventListener('click', function() {
             const data = {
-                boxes: [
-                    { content: 'Box 1' },
-                    { content: 'Box 2' },
-                    { content: 'Box 3' },
-                    { content: 'Box 4' }
-                ]
+                boxes: Array.from(document.querySelectorAll('.grid div span')).map(box => ({ content: box.textContent }))
             };
             const json = JSON.stringify(data, null, 2);
             const blob = new Blob([json], { type: 'application/json' });
