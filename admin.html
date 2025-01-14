@@ -5,6 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>4 x Bingo Admin</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+        }
+        main {
+            max-width: 800px;
+            margin: 2em auto;
+            padding: 1em;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1em;
+            margin-bottom: 2em;
+        }
+        label {
+            align-self: center;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 0.5em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            grid-column: span 2;
+            padding: 0.75em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f4f4f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -22,10 +77,10 @@
         </form>
 
         <h2>Current JSON Configuration:</h2>
-        <pre id="current-json" style="background-color: #f4f4f9; padding: 10px; border: 1px solid #ccc; white-space: pre-wrap;"></pre>
+        <pre id="current-json"></pre>
 
         <h2>Updated JSON Configuration:</h2>
-        <pre id="updated-json" style="background-color: #f4f4f9; padding: 10px; border: 1px solid #ccc; white-space: pre-wrap;"></pre>
+        <pre id="updated-json"></pre>
     </main>
 
     <script src="admin.js"></script>
