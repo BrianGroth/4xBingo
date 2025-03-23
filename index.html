@@ -183,6 +183,66 @@
       #instructions li {
         margin-bottom: 0.25rem;
       }
+
+      #bingo-popup {
+        position: fixed; /* Overlay the entire screen */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10; /* Sit on top of everything */
+        opacity: 0; /* Start invisible */
+        transition: opacity 0.5s ease-in-out; /* Smooth transition */
+        pointer-events: none; /* Allows clicks to pass through when invisible */
+      }
+
+      #bingo-popup.show {
+        opacity: 1; /* Fade in when shown */
+        pointer-events: auto; /* Make clickable when visible */
+      }
+
+      #bingo-popup-content {
+        font-size: 3rem; /* Large text */
+        color: #fff; /* White text */
+        text-shadow: 0 0 0.25rem #f1c40f, 0 0 0.5rem #e67e22; /* Glowing text */
+        animation: pulse 2s infinite; /* Pulsing animation */
+        border: 0.25rem solid #fff;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background-color: #d35400;
+      }
+
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+      }
+
+      .fireworks {
+        position: absolute;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background-color: #ffeb3b;
+        animation: explode 1s ease-out infinite;
+        pointer-events: none; /* So they don't interfere with clicks */
+      }
+
+      @keyframes explode {
+        0% {
+          transform: translate(0, 0) scale(0);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--x), var(--y)) scale(3); /* Expand outwards */
+          opacity: 0;
+        }
+      }
     </style>
 </head>
 <body class="bg-gray-100 p-4">
@@ -202,15 +262,21 @@
                 <li>Tap "Reset Game" to start a new game.</li>
               </ul>
         </div>
+        <div id="bingo-popup">
+            <div id="bingo-popup-content">Bingo!</div>
+        </div>
     </div>
 
     <script>
       const bingoCardEl = document.getElementById('bingo-card');
       const resetButton = document.getElementById('reset-button');
       const PHRASES_URL = 'bingo_phrases.json'; // URL for the JSON file
+      const bingoPopup = document.getElementById('bingo-popup');
+      const bingoPopupContent = document.getElementById('bingo-popup-content');
 
       let bingoPhrases = [];
       let currentCard = [];
+      let photosTaken = 0;
 
       // Function to fetch the bingo phrases from the JSON file
       async function fetchBingoPhrases() {
@@ -275,6 +341,7 @@
       function generateCard() {
           currentCard = []; // Clear the current card
           bingoCardEl.innerHTML = ''; // Clear the HTML card
+          photosTaken = 0; // Reset photo count
           for (let i = 0; i < 4; i++) {
             const phrase = getRandomPhrase();
             const square = document.createElement('div');
@@ -314,7 +381,10 @@
                     label.textContent = square.getAttribute('data-phrase');
                     label.classList.add('label');
                     square.appendChild(label);
-                    //saveImage(e.target.result, square.getAttribute('data-phrase')); // Removed the direct call to saveImage
+                    photosTaken++;
+                    if (photosTaken === 4) {
+                        showBingo();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -326,6 +396,30 @@
       resetButton.addEventListener('click', () => {
         generateCard();
       });
+
+    function showBingo() {
+      bingoPopup.classList.add('show');
+      // Create and add fireworks
+      for (let i = 0; i < 20; i++) { // More fireworks!
+        const firework = document.createElement('div');
+        firework.classList.add('fireworks');
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight;
+        const dx = (Math.random() - 0.5) * 300; // Increased speed
+        const dy = (Math.random() - 0.5) * 300;
+        firework.style.setProperty('--x', `${dx}px`);
+        firework.style.setProperty('--y', `${dy}px`);
+        firework.style.left = `${x}px`;
+        firework.style.top = `${y}px`;
+        document.body.appendChild(firework);
+      }
+      setTimeout(() => {
+        bingoPopup.classList.remove('show');
+        // Remove fireworks
+        document.querySelectorAll('.fireworks').forEach(f => f.remove());
+        generateCard(); // Start new game after bingo
+      }, 3000); // Increased duration
+    }
 
       // Initialize the game when the page loads
       window.addEventListener('load', async () => {
