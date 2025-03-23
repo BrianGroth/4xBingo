@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4 x Bingo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* (Your CSS styles remain largely the same) */
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #f0f4f8;
+      color: #333;
+      min-height: 100vh;
+    }
+    /* … (Other CSS rules unchanged) … */
+    .grid div {
+      position: relative;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #fff;
+      color: #333;
+      text-align: center;
+      overflow: hidden;
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    .grid div:hover {
+      transform: scale(1.04);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    .grid div img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+    .grid div span {
+      position: absolute;
+      bottom: 12px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .grid div:hover span {
+      opacity: 1;
+    }
+    .grid div .save-photo {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 1;
+      transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+      opacity: 0;
+    }
+    .grid div:hover .save-photo {
+      opacity: 1;
+    }
+    .grid div .save-photo:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .grid div .save-photo:active {
+      transform: scale(1);
+    }
+    /* (Other CSS rules for header, footer, modal, etc.) remain unchanged */
+  </style>
+</head>
+<body>
+  <header>
+    <h1>4 x Bingo</h1>
+    <p id="subtitle">Loading...</p>
+  </header>
+  <main>
+    <div id="bingo-grid" class="grid"></div>
+  </main>
+  <footer>
+    <p id="footer-text">Loading...</p>
+  </footer>
+  <div id="win-message">
+    <h1>🎉 YOU WIN! 🎉</h1>
+    <p>Congratulations! You've completed your 4 x Bingo!</p>
+    <div class="grid" id="win-grid"></div>
+  </div>
+  <div id="photo-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h2>Choose Photo Source</h2>
+      <div class="modal-body">
+        <button id="take-photo">Take Photo</button>
+        <button id="choose-existing">Choose Existing</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Global variables to hold configuration and state
+    let config = {};
+    let selectedCell = null;
+    let selectedWord = "";
+    let uploadedCount = 0;
+
+    // Load configuration from config.json
+    fetch('config.json')
+      .then(response => response.json())
+      .then(data => {
+        config = data;
+        initializeGame();
+      })
+      .catch(error => {
+        console.error("Failed to load config.json:", error);
+        // Fallback configuration if config.json fails
+        config = {
+          subtitle: "Upload 4 photos to win!",
+          footer: "© 2024 My Bingo Game",
+          words: ["Family", "Friends", "Vacation", "Party", "Food", "Travel", "Smile", "Laugh",
+                  "Joy", "Memories", "Celebration", "Holiday", "Fun", "Adventure", "Together", "Love",
+                  "Happy", "Excited", "Amazing", "Special", "Cherish", "Moments", "Good Times", "Blessed"]
+        };
+        initializeGame();
+      });
+
+    // UI Elements
+    const gridElement = document.getElementById("bingo-grid");
+    const subtitleElement = document.getElementById("subtitle");
+    const footerElement = document.getElementById("footer-text");
+    const winMessageElement = document.getElementById("win-message");
+    const winGridElement = document.getElementById("win-grid");
+    const modal = document.getElementById("photo-modal");
+    const takePhotoBtn = document.getElementById("take-photo");
+    const chooseExistingBtn = document.getElementById("choose-existing");
+    const closeBtn = document.querySelector(".close-button");
+
+    function initializeGame() {
+      subtitleElement.textContent = config.subtitle;
+      footerElement.textContent = config.footer;
+      uploadedCount = 0;
+      gridElement.innerHTML = "";
+      // Randomly choose 4 words from config.words
+      const words = getRandomWords(config.words, 4);
+      words.forEach(word => {
+        const cell = document.createElement("div");
+        cell.textContent = word;
+        cell.addEventListener("click", () => showPhotoOptions(cell, word));
+        gridElement.appendChild(cell);
+      });
+    }
+
+    function getRandomWords(wordList, count) {
+      return wordList.sort(() => 0.5 - Math.random()).slice(0, count);
+    }
+
+    function showPhotoOptions(cell, word) {
+      selectedCell = cell;
+      selectedWord = word;  // Store the original word for later use
+      modal.style.display = "block";
+    }
+
+    // Modal close functionality
+    closeBtn.onclick = () => { modal.style.display = "none"; };
+    window.onclick = (event) => { if (event.target === modal) modal.style.display = "none"; };
+
+    takePhotoBtn.onclick = () => { openCamera(); modal.style.display = "none"; };
+    chooseExistingBtn.onclick = () => { openGallery(); modal.style.display = "none"; };
+
+    function openCamera() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.capture = "camera";
+      input.onchange = (event) => handleFile(event);
+      input.click();
+    }
+
+    function openGallery() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = (event) => handleFile(event);
+      input.click();
+    }
+
+    function handleFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const photoURL = reader.result;
+        // Replace cell content with the image and overlay using selectedWord
+        selectedCell.innerHTML = `
+          <img src="${photoURL}" alt="${selectedWord}">
+          <span>${selectedWord}</span>
+          <button class="save-photo">Save</button>
+        `;
+        const saveButton = selectedCell.querySelector(".save-photo");
+        saveButton.addEventListener("click", (e) => {
+          e.stopPropagation();
+          triggerDownload(photoURL, `${selectedWord}-photo.jpg`);
+        });
+        // (Optional) Update game progress and check for win condition...
+        // For example:
+        // uploadedCount++;
+        // if (uploadedCount === 4) { winMessageElement.style.display = "block"; }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function triggerDownload(url, filename) {
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>

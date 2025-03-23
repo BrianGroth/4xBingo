@@ -1,240 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4 x Bingo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    /* (Your CSS styles remain largely the same) */
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: #f0f4f8;
-      color: #333;
-      min-height: 100vh;
-    }
-    /* … (Other CSS rules unchanged) … */
-    .grid div {
-      position: relative;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      height: 200px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 16px;
-      cursor: pointer;
-      background-color: #fff;
-      color: #333;
-      text-align: center;
-      overflow: hidden;
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-    }
-    .grid div:hover {
-      transform: scale(1.04);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    }
-    .grid div img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 12px;
-    }
-    .grid div span {
-      position: absolute;
-      bottom: 12px;
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      font-size: 14px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      opacity: 0;
-      transition: opacity 0.3s ease-in-out;
-    }
-    .grid div:hover span {
-      opacity: 1;
-    }
-    .grid div .save-photo {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      padding: 8px 16px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-      z-index: 1;
-      transition: background-color 0.2s ease-in-out, transform 0.1s ease;
-      opacity: 0;
-    }
-    .grid div:hover .save-photo {
-      opacity: 1;
-    }
-    .grid div .save-photo:hover {
-      background-color: #0056b3;
-      transform: scale(1.05);
-    }
-    .grid div .save-photo:active {
-      transform: scale(1);
-    }
-    /* (Other CSS rules for header, footer, modal, etc.) remain unchanged */
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Bingo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+      body {
+        font-family: 'Press Start 2P', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 95%;
+        max-width: 800px; /* Increased max-width for larger screens */
+        padding: 1rem;
+        background-color: rgba(255, 255, 255, 0.9); /* Added opacity to the white background */
+        border-radius: 1rem; /* Increased border-radius */
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
+        text-align: center;
+        margin: auto; /* Center the container */
+      }
+
+      h1 {
+        font-size: 1.5rem; /* Increased font-size */
+        margin-bottom: 0.5rem; /* Reduced margin-bottom */
+        color: #2c3e50;
+        text-shadow: 0.0625rem 0.0625rem 0 #fff; /* Added text shadow */
+      }
+      @media (min-width: 640px) {
+        h1 {
+            font-size: 2.5rem; /* Increased font size for larger screens */
+        }
+      }
+
+      #bingo-card {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem; /* Increased gap */
+        margin-bottom: 1rem;
+        width: 100%;
+      }
+      @media (min-width: 640px) {
+        #bingo-card {
+            gap: 1rem; /* Increased gap for larger screens */
+        }
+      }
+
+      .bingo-square {
+        width: 100%;
+        height: auto; /* Maintain aspect ratio */
+        aspect-ratio: 1 / 1; /* Ensure square aspect ratio */
+        border: 0.125rem solid #3498db; /* Slightly thicker border */
+        border-radius: 0.5rem; /* Increased border-radius */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        overflow: hidden; /* Ensure image doesn't overflow */
+        position: relative; /* Needed for absolute positioning of elements inside */
+        background-color: #ecf0f1; /* Light background for squares */
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transition */
+      }
+
+      .bingo-square:hover {
+        transform: scale(1.04); /* Slight scale on hover */
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+      }
+
+
+      .bingo-square img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensure image covers the entire square */
+        border-radius: 0.5rem; /* Ensure image has same border-radius */
+      }
+
+      .bingo-square button {
+        margin-top: 0.5rem; /* Increased margin-top */
+        padding: 0.375rem 0.75rem; /* Slightly increased padding */
+        font-size: 0.7rem; /* Increased font-size */
+        color: #fff;
+        background-color: #3498db;
+        border: none;
+        border-radius: 0.375rem; /* Increased border-radius */
+        cursor: pointer;
+        transition: background-color 0.3s ease; /* Smooth transition */
+        font-family: 'Press Start 2P', sans-serif;
+        text-shadow: 0.0625rem 0.0625rem 0 #217dbb;
+      }
+
+      .bingo-square button:hover {
+        background-color: #217dbb;
+      }
+
+      .bingo-square button:active {
+        background-color: #1a5e91;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2) inset; /* Small inset shadow on active */
+        transform: translateY(0.0625rem); /* Small downward shift on active */
+      }
+
+      .label {
+        font-size: 0.6rem; /* Increased font-size */
+        color: #555; /* Darker label color */
+        margin-top: 0.25rem; /* Added margin-top */
+        word-wrap: break-word; /* Ensure label wraps */
+        max-width: 100%; /* Ensure label doesn't overflow */
+      }
+      @media (min-width: 640px) {
+        .label {
+            font-size: 0.8rem; /* Increased font size for larger screens */
+        }
+      }
+
+      #reset-button {
+        margin-top: 1rem;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.7rem;
+        color: #fff;
+        background-color: #e74c3c;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-family: 'Press Start 2P', sans-serif;
+        text-shadow: 0.0625rem 0.0625rem 0 #c0392b;
+      }
+
+      #reset-button:hover {
+        background-color: #c0392b;
+      }
+       #reset-button:active {
+        background-color: #a03327;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2) inset; /* Small inset shadow on active */
+        transform: translateY(0.0625rem); /* Small downward shift on active */
+      }
+
+      #instructions {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #f9f9f9;
+        border-radius: 0.5rem;
+        border: 0.125rem solid #ddd;
+        font-size: 0.7rem;
+        color: #34495e;
+        text-align: left;
+        line-height: 1.5;
+      }
+      @media (min-width: 640px) {
+        #instructions{
+            font-size: 0.8rem;
+        }
+      }
+
+      #instructions h2 {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+        font-family: 'Press Start 2P', sans-serif;
+        text-shadow: 0.0625rem 0.0625rem 0 #fff;
+      }
+      @media (min-width: 640px) {
+        #instructions h2{
+             font-size: 1.1rem;
+        }
+      }
+
+      #instructions ul {
+        list-style-type: disc;
+        padding-left: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      #instructions li {
+        margin-bottom: 0.25rem;
+      }
+    </style>
 </head>
-<body>
-  <header>
-    <h1>4 x Bingo</h1>
-    <p id="subtitle">Loading...</p>
-  </header>
-  <main>
-    <div id="bingo-grid" class="grid"></div>
-  </main>
-  <footer>
-    <p id="footer-text">Loading...</p>
-  </footer>
-  <div id="win-message">
-    <h1>🎉 YOU WIN! 🎉</h1>
-    <p>Congratulations! You've completed your 4 x Bingo!</p>
-    <div class="grid" id="win-grid"></div>
-  </div>
-  <div id="photo-modal" class="modal">
-    <div class="modal-content">
-      <span class="close-button">&times;</span>
-      <h2>Choose Photo Source</h2>
-      <div class="modal-body">
-        <button id="take-photo">Take Photo</button>
-        <button id="choose-existing">Choose Existing</button>
-      </div>
+<body class="bg-gray-100 p-4">
+    <div class="container">
+        <h1 class="text-2xl font-bold mb-4 text-gray-800">Photo Bingo</h1>
+        <div id="bingo-card">
+            </div>
+        <button id="reset-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Reset Game</button>
+        <div id="instructions" class="mt-4 bg-gray-50 p-4 rounded border border-gray-200">
+             <h2>How to Play</h2>
+              <ul>
+                <li>Each player gets a bingo card with 4 squares.</li>
+                <li>Each square has a word describing something to find and photograph.</li>
+                <li>When you spot the item, tap the square and take a photo.</li>
+                <li>The photo will appear in the square.</li>
+                <li>The goal is to fill all 4 squares (get a "bingo")!</li>
+                <li>Tap "Reset Game" to start a new game.</li>
+              </ul>
+        </div>
     </div>
-  </div>
-  <script>
-    // Global variables to hold configuration and state
-    let config = {};
-    let selectedCell = null;
-    let selectedWord = "";
-    let uploadedCount = 0;
 
-    // Load configuration from config.json
-    fetch('config.json')
-      .then(response => response.json())
-      .then(data => {
-        config = data;
-        initializeGame();
-      })
-      .catch(error => {
-        console.error("Failed to load config.json:", error);
-        // Fallback configuration if config.json fails
-        config = {
-          subtitle: "Upload 4 photos to win!",
-          footer: "© 2024 My Bingo Game",
-          words: ["Family", "Friends", "Vacation", "Party", "Food", "Travel", "Smile", "Laugh",
-                  "Joy", "Memories", "Celebration", "Holiday", "Fun", "Adventure", "Together", "Love",
-                  "Happy", "Excited", "Amazing", "Special", "Cherish", "Moments", "Good Times", "Blessed"]
-        };
-        initializeGame();
+    <script>
+      const bingoCardEl = document.getElementById('bingo-card');
+      const resetButton = document.getElementById('reset-button');
+      const PHRASES_URL = 'bingo_phrases.json'; // URL for the JSON file
+
+      let bingoPhrases = [];
+      let currentCard = [];
+
+      // Function to fetch the bingo phrases from the JSON file
+      async function fetchBingoPhrases() {
+        try {
+          const response = await fetch(PHRASES_URL);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch bingo phrases: ${response.status}`);
+          }
+          bingoPhrases = await response.json();
+        } catch (error) {
+          console.error("Error fetching bingo phrases:", error);
+          // Fallback phrases in case fetching fails
+          bingoPhrases = [
+                "A unique bird",
+                "A funny sign",
+                "A red car",
+                "A body of water",
+                "A yellow flower",
+                "A cat",
+                "A dog",
+                "A mountain",
+                "A bridge",
+                "A statue",
+                "A historic building",
+                "A local food",
+                "A street performer",
+                "A piece of street art",
+                "A beautiful sunset"
+            ];
+        }
+      }
+
+        // Function to select a random phrase from the bingoPhrases array
+        function getRandomPhrase() {
+            if (bingoPhrases.length === 0) {
+                // Refill the array if it's empty
+                bingoPhrases = [
+                    "A unique bird",
+                    "A funny sign",
+                    "A red car",
+                    "A body of water",
+                    "A yellow flower",
+                    "A cat",
+                    "A dog",
+                    "A mountain",
+                    "A bridge",
+                    "A statue",
+                    "A historic building",
+                    "A local food",
+                    "A street performer",
+                    "A piece of street art",
+                    "A beautiful sunset"
+                ];
+                console.warn("Bingo phrases array was empty. Refilled with default phrases.");
+            }
+            const randomIndex = Math.floor(Math.random() * bingoPhrases.length);
+            const phrase = bingoPhrases.splice(randomIndex, 1)[0]; // Remove phrase
+            return phrase;
+        }
+
+      // Function to generate a new bingo card
+      function generateCard() {
+          currentCard = []; // Clear the current card
+          bingoCardEl.innerHTML = ''; // Clear the HTML card
+          for (let i = 0; i < 4; i++) {
+            const phrase = getRandomPhrase();
+            const square = document.createElement('div');
+            square.classList.add('bingo-square');
+            square.setAttribute('data-phrase', phrase); // Store the phrase
+            square.innerHTML = `<p class="label">${phrase}</p>`; // Initial content
+
+            const captureButton = document.createElement('button');
+            captureButton.textContent = 'Take Photo';
+            captureButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent click from triggering square click
+                capturePhoto(square);
+            });
+            square.appendChild(captureButton);
+            bingoCardEl.appendChild(square);
+            currentCard.push(square);
+          }
+      }
+
+    // Function to handle taking a photo
+    function capturePhoto(square) {
+        // Use a simple approach for demonstration within the browser.
+        const img = document.createElement('img');
+        img.src = "https://placehold.co/400x400/000/FFF?text=Photo&font=Montserrat";  // Placeholder
+        img.alt = "User Photo";
+
+        // Clear previous content in the square
+        square.innerHTML = '';
+        square.appendChild(img);
+        const label = document.createElement('p');
+        label.textContent = square.getAttribute('data-phrase');
+        label.classList.add('label');
+        square.appendChild(label);
+
+        // Simulate saving the image.
+        const link = document.createElement('a');
+        link.href = img.src;  // Use the placeholder image URL
+        link.download = `bingo_photo_${Date.now()}.png`; //  filename
+        link.style.display = 'none'; // don't show the link
+        document.body.appendChild(link);  // add to the document
+        link.click(); // simulate click
+        document.body.removeChild(link); // and remove
+    }
+
+      // Event listener for the reset button
+      resetButton.addEventListener('click', () => {
+        generateCard();
       });
 
-    // UI Elements
-    const gridElement = document.getElementById("bingo-grid");
-    const subtitleElement = document.getElementById("subtitle");
-    const footerElement = document.getElementById("footer-text");
-    const winMessageElement = document.getElementById("win-message");
-    const winGridElement = document.getElementById("win-grid");
-    const modal = document.getElementById("photo-modal");
-    const takePhotoBtn = document.getElementById("take-photo");
-    const chooseExistingBtn = document.getElementById("choose-existing");
-    const closeBtn = document.querySelector(".close-button");
-
-    function initializeGame() {
-      subtitleElement.textContent = config.subtitle;
-      footerElement.textContent = config.footer;
-      uploadedCount = 0;
-      gridElement.innerHTML = "";
-      // Randomly choose 4 words from config.words
-      const words = getRandomWords(config.words, 4);
-      words.forEach(word => {
-        const cell = document.createElement("div");
-        cell.textContent = word;
-        cell.addEventListener("click", () => showPhotoOptions(cell, word));
-        gridElement.appendChild(cell);
+      // Initialize the game when the page loads
+      window.addEventListener('load', async () => {
+        await fetchBingoPhrases(); // Ensure phrases are loaded before generating card
+        generateCard();
       });
-    }
-
-    function getRandomWords(wordList, count) {
-      return wordList.sort(() => 0.5 - Math.random()).slice(0, count);
-    }
-
-    function showPhotoOptions(cell, word) {
-      selectedCell = cell;
-      selectedWord = word;  // Store the original word for later use
-      modal.style.display = "block";
-    }
-
-    // Modal close functionality
-    closeBtn.onclick = () => { modal.style.display = "none"; };
-    window.onclick = (event) => { if (event.target === modal) modal.style.display = "none"; };
-
-    takePhotoBtn.onclick = () => { openCamera(); modal.style.display = "none"; };
-    chooseExistingBtn.onclick = () => { openGallery(); modal.style.display = "none"; };
-
-    function openCamera() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.capture = "camera";
-      input.onchange = (event) => handleFile(event);
-      input.click();
-    }
-
-    function openGallery() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = (event) => handleFile(event);
-      input.click();
-    }
-
-    function handleFile(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const photoURL = reader.result;
-        // Replace cell content with the image and overlay using selectedWord
-        selectedCell.innerHTML = `
-          <img src="${photoURL}" alt="${selectedWord}">
-          <span>${selectedWord}</span>
-          <button class="save-photo">Save</button>
-        `;
-        const saveButton = selectedCell.querySelector(".save-photo");
-        saveButton.addEventListener("click", (e) => {
-          e.stopPropagation();
-          triggerDownload(photoURL, `${selectedWord}-photo.jpg`);
-        });
-        // (Optional) Update game progress and check for win condition...
-        // For example:
-        // uploadedCount++;
-        // if (uploadedCount === 4) { winMessageElement.style.display = "block"; }
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function triggerDownload(url, filename) {
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  </script>
+    </script>
 </body>
 </html>
