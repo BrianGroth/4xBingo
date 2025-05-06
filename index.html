@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Bingo</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
       body {
         font-family: 'Press Start 2P', sans-serif;
@@ -20,80 +20,79 @@
 
       .container {
         width: 95%;
-        max-width: 800px; /* Increased max-width for larger screens */
+        max-width: 800px;
         padding: 1rem;
-        background-color: rgba(255, 255, 255, 0.9); /* Added opacity to the white background */
-        border-radius: 1rem; /* Increased border-radius */
-        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 1rem;
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
         text-align: center;
-        margin: auto; /* Center the container */
+        margin: auto;
       }
 
       h1 {
-        font-size: 1.5rem; /* Increased font-size */
-        margin-bottom: 0.5rem; /* Reduced margin-bottom */
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
         color: #2c3e50;
-        text-shadow: 0.0625rem 0.0625rem 0 #fff; /* Added text shadow */
+        text-shadow: 0.0625rem 0.0625rem 0 #fff;
       }
       @media (min-width: 640px) {
         h1 {
-            font-size: 2.5rem; /* Increased font size for larger screens */
+            font-size: 2.5rem;
         }
       }
 
       #bingo-card {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem; /* Increased gap */
+        gap: 0.5rem;
         margin-bottom: 1rem;
         width: 100%;
       }
       @media (min-width: 640px) {
         #bingo-card {
-            gap: 1rem; /* Increased gap for larger screens */
+            gap: 1rem;
         }
       }
 
       .bingo-square {
         width: 100%;
-        height: auto; /* Maintain aspect ratio */
-        aspect-ratio: 1 / 1; /* Ensure square aspect ratio */
-        border: 0.125rem solid #3498db; /* Slightly thicker border */
-        border-radius: 0.5rem; /* Increased border-radius */
+        height: auto;
+        aspect-ratio: 1 / 1;
+        border: 0.125rem solid #3498db;
+        border-radius: 0.5rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
-        overflow: hidden; /* Ensure image doesn't overflow */
-        position: relative; /* Needed for absolute positioning of elements inside */
-        background-color: #ecf0f1; /* Light background for squares */
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transition */
+        overflow: hidden;
+        position: relative;
+        background-color: #ecf0f1;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
       }
 
       .bingo-square:hover {
-        transform: scale(1.04); /* Slight scale on hover */
-        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+        transform: scale(1.04);
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.2);
       }
-
 
       .bingo-square img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Ensure image covers the entire square */
-        border-radius: 0.5rem; /* Ensure image has same border-radius */
+        object-fit: cover;
+        border-radius: 0.5rem;
       }
 
       .bingo-square button {
-        margin-top: 0.5rem; /* Increased margin-top */
-        padding: 0.375rem 0.75rem; /* Slightly increased padding */
-        font-size: 0.7rem; /* Increased font-size */
+        margin-top: 0.5rem;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.7rem;
         color: #fff;
         background-color: #3498db;
         border: none;
-        border-radius: 0.375rem; /* Increased border-radius */
+        border-radius: 0.375rem;
         cursor: pointer;
-        transition: background-color 0.3s ease; /* Smooth transition */
+        transition: background-color 0.3s ease;
         font-family: 'Press Start 2P', sans-serif;
         text-shadow: 0.0625rem 0.0625rem 0 #217dbb;
       }
@@ -104,20 +103,20 @@
 
       .bingo-square button:active {
         background-color: #1a5e91;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2) inset; /* Small inset shadow on active */
-        transform: translateY(0.0625rem); /* Small downward shift on active */
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2) inset;
+        transform: translateY(0.0625rem);
       }
 
       .label {
-        font-size: 0.6rem; /* Increased font-size */
-        color: #555; /* Darker label color */
-        margin-top: 0.25rem; /* Added margin-top */
-        word-wrap: break-word; /* Ensure label wraps */
-        max-width: 100%; /* Ensure label doesn't overflow */
+        font-size: 0.6rem;
+        color: #555;
+        margin-top: 0.25rem;
+        word-wrap: break-word;
+        max-width: 100%;
       }
       @media (min-width: 640px) {
         .label {
-            font-size: 0.8rem; /* Increased font size for larger screens */
+            font-size: 0.8rem;
         }
       }
 
@@ -140,8 +139,8 @@
       }
        #reset-button:active {
         background-color: #a03327;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2) inset; /* Small inset shadow on active */
-        transform: translateY(0.0625rem); /* Small downward shift on active */
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2) inset;
+        transform: translateY(0.0625rem);
       }
 
       #instructions {
@@ -185,32 +184,32 @@
       }
 
       #bingo-popup {
-        position: fixed; /* Overlay the entire screen */
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
+        background-color: rgba(0, 0, 0, 0.8);
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        z-index: 10; /* Sit on top of everything */
-        opacity: 0; /* Start invisible */
-        transition: opacity 0.5s ease-in-out; /* Smooth transition */
-        pointer-events: none; /* Allows clicks to pass through when invisible */
+        z-index: 10;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        pointer-events: none;
       }
 
       #bingo-popup.show {
-        opacity: 1; /* Fade in when shown */
-        pointer-events: auto; /* Make clickable when visible */
+        opacity: 1;
+        pointer-events: auto;
       }
 
       #bingo-popup-content {
-        font-size: 3rem; /* Large text */
-        color: #fff; /* White text */
-        text-shadow: 0 0 0.25rem #f1c40f, 0 0 0.5rem #e67e22; /* Glowing text */
-        animation: pulse 2s infinite; /* Pulsing animation */
+        font-size: 3rem;
+        color: #fff;
+        text-shadow: 0 0 0.25rem #f1c40f, 0 0 0.5rem #e67e22;
+        animation: pulse 2s infinite;
         border: 0.25rem solid #fff;
         padding: 1rem;
         border-radius: 0.5rem;
@@ -230,7 +229,7 @@
         border-radius: 50%;
         background-color: #ffeb3b;
         animation: explode 1s ease-out infinite;
-        pointer-events: none; /* So they don't interfere with clicks */
+        pointer-events: none;
       }
 
       @keyframes explode {
@@ -239,7 +238,7 @@
           opacity: 1;
         }
         100% {
-          transform: translate(var(--x), var(--y)) scale(3); /* Expand outwards */
+          transform: translate(var(--x), var(--y)) scale(3);
           opacity: 0;
         }
       }
@@ -298,264 +297,186 @@
       }
     </style>
 </head>
-<body class="bg-gray-100 p-4">
-    <div class="container">
-        <h1 class="text-2xl font-bold mb-4 text-gray-800">Photo Bingo</h1>
-        <div id="bingo-card">
-            </div>
-        <button id="reset-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Reset Game</button>
-        <div id="instructions" class="mt-4 bg-gray-50 p-4 rounded border border-gray-200">
-             <h2>How to Play</h2>
-              <ul>
-                <li>Each player gets a bingo card with 4 squares.</li>
-                <li>Each square has a word describing something to find and photograph.</li>
-                <li>When you spot the item, tap the square and take a photo.</li>
-                <li>The photo will appear in the square.</li>
-                <li>The goal is to fill all 4 squares (get a "bingo")!</li>
-                <li>Tap "Reset Game" to start a new game.</li>
-              </ul>
-        </div>
-        <div id="bingo-popup">
-            <div id="bingo-popup-content">Bingo!</div>
-        </div>
-        <div id="save-options" style="display: none;">
-            <button id="save-all-button">Save All Photos</button>
-            <button id="save-selected-button">Save Selected Photos</button>
-        </div>
+<body class="bg-gradient-to-br from-blue-100 to-yellow-100 min-h-screen flex items-center justify-center">
+  <div class="container mx-auto max-w-xl p-6 bg-white/90 rounded-2xl shadow-2xl flex flex-col items-center">
+    <h1 class="text-3xl sm:text-4xl font-extrabold mb-4 text-blue-900 drop-shadow">Photo Bingo</h1>
+    <div id="bingo-card" class="grid grid-cols-2 gap-4 w-full mb-4"></div>
+    <div class="flex gap-2 w-full justify-center mb-2">
+      <button id="reset-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow transition">Reset Game</button>
+      <button id="save-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded shadow transition hidden">Save Photos</button>
     </div>
+    <div id="save-options" class="flex gap-2 mb-2 hidden">
+      <button id="save-all-button" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded shadow transition">Save All</button>
+      <button id="save-selected-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition">Save Selected</button>
+    </div>
+    <div id="instructions" class="w-full mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200 text-gray-700 text-sm">
+      <h2 class="text-lg font-bold mb-2 text-blue-800">How to Play</h2>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Each player gets a bingo card with 4 squares.</li>
+        <li>Each square has a word describing something to find and photograph.</li>
+        <li>When you spot the item, tap the square and take a photo.</li>
+        <li>The photo will appear in the square.</li>
+        <li>The goal is to fill all 4 squares (get a "bingo")!</li>
+        <li>Tap "Reset Game" to start a new game.</li>
+      </ul>
+    </div>
+    <div id="bingo-popup" class="fixed inset-0 flex flex-col items-center justify-center bg-black/80 z-50 opacity-0 pointer-events-none transition-opacity duration-500">
+      <div id="bingo-popup-content" class="text-4xl sm:text-5xl font-extrabold text-yellow-300 drop-shadow-lg border-4 border-white p-6 rounded-xl bg-orange-600 animate-pulse">Bingo!</div>
+    </div>
+  </div>
+  <script>
+    const bingoCardEl = document.getElementById('bingo-card');
+    const resetButton = document.getElementById('reset-button');
+    const PHRASES_URL = 'bingo_phrases.json';
+    const bingoPopup = document.getElementById('bingo-popup');
+    const saveOptions = document.getElementById('save-options');
+    const saveAllButton = document.getElementById('save-all-button');
+    const saveSelectedButton = document.getElementById('save-selected-button');
+    const saveButton = document.getElementById('save-button');
 
-    <script>
-      const bingoCardEl = document.getElementById('bingo-card');
-      const resetButton = document.getElementById('reset-button');
-      const PHRASES_URL = 'bingo_phrases.json'; // URL for the JSON file
-      const bingoPopup = document.getElementById('bingo-popup');
-      const bingoPopupContent = document.getElementById('bingo-popup-content');
-      const saveOptions = document.getElementById('save-options');
-      const saveAllButton = document.getElementById('save-all-button');
-      const saveSelectedButton = document.getElementById('save-selected-button');
+    let bingoPhrases = [];
+    let currentCard = [];
+    let images = [null, null, null, null]; // Always 4 slots
 
-      let bingoPhrases = [];
-      let currentCard = [];
-      let photosTaken = 0;
-      let images = []; // Array to store the image data URLs
-
-      // Function to fetch the bingo phrases from the JSON file
-      async function fetchBingoPhrases() {
-        try {
-          const response = await fetch(PHRASES_URL + '?v=' + Date.now()); // Append cache-busting query
-          if (!response.ok) {
-            throw new Error(`Failed to fetch bingo phrases: ${response.status}`);
-          }
-          bingoPhrases = await response.json();
-        } catch (error) {
-          console.error("Error fetching bingo phrases:", error);
-          // Fallback phrases in case fetching fails
-          bingoPhrases = [
-                "A unique bird",
-                "A funny sign",
-                "A red car",
-                "A body of water",
-                "A yellow flower",
-                "A cat",
-                "A dog",
-                "A mountain",
-                "A bridge",
-                "A statue",
-                "A historic building",
-                "A local food",
-                "A street performer",
-                "A piece of street art",
-                "A beautiful sunset"
-            ];
-        }
+    async function fetchBingoPhrases() {
+      try {
+        const response = await fetch(PHRASES_URL + '?v=' + Date.now());
+        if (!response.ok) throw new Error();
+        bingoPhrases = await response.json();
+      } catch {
+        bingoPhrases = [
+          "A unique bird", "A funny sign", "A red car", "A body of water",
+          "A yellow flower", "A cat", "A dog", "A mountain", "A bridge",
+          "A statue", "A historic building", "A local food", "A street performer",
+          "A piece of street art", "A beautiful sunset"
+        ];
       }
-
-        // Function to select a random phrase from the bingoPhrases array
-        function getRandomPhrase() {
-            if (bingoPhrases.length === 0) {
-                // Refill the array if it's empty
-                bingoPhrases = [
-                    "A unique bird",
-                    "A funny sign",
-                    "A red car",
-                    "A body of water",
-                    "A yellow flower",
-                    "A cat",
-                    "A dog",
-                    "A mountain",
-                    "A bridge",
-                    "A statue",
-                    "A historic building",
-                    "A local food",
-                    "A street performer",
-                    "A piece of street art",
-                    "A beautiful sunset"
-                ];
-                console.warn("Bingo phrases array was empty. Refilled with default phrases.");
-            }
-            const randomIndex = Math.floor(Math.random() * bingoPhrases.length);
-            const phrase = bingoPhrases.splice(randomIndex, 1)[0]; // Remove phrase
-            return phrase;
-        }
-
-      // Function to generate a new bingo card
-      function generateCard() {
-          currentCard = []; // Clear the current card
-          bingoCardEl.innerHTML = ''; // Clear the HTML card
-          photosTaken = 0; // Reset photo count
-          images = []; // Clear the image URLs
-          saveOptions.style.display = 'none'; // Hide save options
-          for (let i = 0; i < 4; i++) {
-            const phrase = getRandomPhrase();
-            const square = document.createElement('div');
-            square.classList.add('bingo-square');
-            square.setAttribute('data-phrase', phrase); // Store the phrase
-            square.innerHTML = `<p class="label">${phrase}</p>`; // Initial content
-
-            const captureButton = document.createElement('button');
-            captureButton.textContent = 'Take Photo';
-            captureButton.addEventListener('click', (event) => {
-                event.stopPropagation(); // Prevent click from triggering square click
-                capturePhoto(square);
-            });
-            square.appendChild(captureButton);
-            bingoCardEl.appendChild(square);
-            currentCard.push(square);
-          }
-      }
-
-    // Function to handle taking a photo
-    function capturePhoto(square) {
-        // Use a simple approach for demonstration within the browser.
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.alt = "User Photo";
-                    square.innerHTML = ''; // Clear previous content
-                    square.appendChild(img);
-                    const label = document.createElement('p');
-                    label.textContent = square.getAttribute('data-phrase');
-                    label.classList.add('label');
-                    square.appendChild(label);
-                    photosTaken++;
-                    images.push(e.target.result); // Store the image data URL
-                    if (photosTaken === 4) {
-                        showBingo();
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        input.click();
     }
 
-      // Event listener for the reset button
-      resetButton.addEventListener('click', () => {
-        generateCard();
-      });
+    function getRandomPhrase() {
+      if (bingoPhrases.length === 0) return "Something interesting";
+      const idx = Math.floor(Math.random() * bingoPhrases.length);
+      return bingoPhrases.splice(idx, 1)[0];
+    }
+
+    function generateCard() {
+      currentCard = [];
+      bingoCardEl.innerHTML = '';
+      images = [null, null, null, null];
+      saveOptions.classList.add('hidden');
+      saveButton.classList.add('hidden');
+      for (let i = 0; i < 4; i++) {
+        const phrase = getRandomPhrase();
+        const square = document.createElement('div');
+        square.className = "bingo-square flex flex-col items-center justify-center bg-blue-50 border-2 border-blue-300 rounded-xl shadow hover:shadow-lg transition relative aspect-square cursor-pointer group";
+        square.setAttribute('data-phrase', phrase);
+        square.innerHTML = `
+          <p class="label text-xs sm:text-sm text-blue-900 font-semibold mb-2 text-center">${phrase}</p>
+          <button class="take-photo-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded transition text-xs">Take Photo</button>
+        `;
+        square.addEventListener('click', () => {
+          if (images[i]) {
+            square.classList.toggle('ring-4');
+            square.classList.toggle('ring-yellow-400');
+          }
+        });
+        square.querySelector('.take-photo-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          capturePhoto(i, square);
+        });
+        bingoCardEl.appendChild(square);
+        currentCard.push(square);
+      }
+    }
+
+    function capturePhoto(idx, square) {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            images[idx] = e.target.result;
+            square.innerHTML = `
+              <img src="${e.target.result}" alt="User Photo" class="w-full h-32 sm:h-40 object-cover rounded-xl mb-2 shadow">
+              <p class="label text-xs sm:text-sm text-blue-900 font-semibold mt-1 text-center">${square.getAttribute('data-phrase')}</p>
+            `;
+            square.classList.add('ring-4', 'ring-green-400');
+            square.addEventListener('click', () => {
+              square.classList.toggle('ring-yellow-400');
+              square.classList.toggle('ring-4');
+            });
+            if (images.filter(Boolean).length === 4) showBingo();
+            saveButton.classList.remove('hidden');
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+    }
+
+    resetButton.addEventListener('click', () => generateCard());
 
     function showBingo() {
-      bingoPopup.classList.add('show');
-      // Create and add fireworks
-      for (let i = 0; i < 20; i++) {
-        const firework = document.createElement('div');
-        firework.classList.add('fireworks');
-        const x = Math.random() * window.innerWidth;
-        const y = Math.random() * window.innerHeight;
-        const dx = (Math.random() - 0.5) * 300;
-        const dy = (Math.random() - 0.5) * 300;
-        firework.style.setProperty('--x', `${dx}px`);
-        firework.style.setProperty('--y', `${dy}px`);
-        firework.style.left = `${x}px`;
-        firework.style.top = `${y}px`;
-        document.body.appendChild(firework);
-      }
+      bingoPopup.classList.remove('opacity-0', 'pointer-events-none');
+      bingoPopup.classList.add('opacity-100');
       setTimeout(() => {
-        bingoPopup.classList.remove('show');
-        // Remove fireworks
-        document.querySelectorAll('.fireworks').forEach(f => f.remove());
-        saveOptions.style.display = 'flex'; // Show save options
-        // Don't reset here.  Keep the images displayed.
-        // generateCard();
-      }, 3000);
+        bingoPopup.classList.add('opacity-0', 'pointer-events-none');
+        bingoPopup.classList.remove('opacity-100');
+        saveButton.classList.remove('hidden');
+      }, 2500);
     }
 
-    function saveAllImages() {
-        if (images.length === 0) {
-            alert("No photos to save!");
-            return;
+    // Save All Photos as ZIP
+    async function saveAllImages() {
+      const zip = new JSZip();
+      let count = 0;
+      images.forEach((img, idx) => {
+        if (img) {
+          zip.file(`bingo_photo_${idx + 1}.jpg`, img.split(',')[1], {base64: true});
+          count++;
         }
-
-        images.forEach((imageData, index) => {
-            downloadImage(imageData, `bingo_photo_${index + 1}.jpg`);
-        });
-    }
-
-  function saveSelectedImages() {
-    if (images.length === 0) {
-        alert("No photos to save!");
-        return;
-    }
-
-    let selectedCount = 0;
-    currentCard.forEach((card, index) => {
-        if (card.classList.contains('selected')) {
-            selectedCount++;
-            downloadImage(images[index], `bingo_photo_${index + 1}.jpg`);
-        }
-    });
-
-    if (selectedCount === 0) {
-        alert("Please select photos to save.");
-    }
-}
-
-    function downloadImage(imageData, filename) {
-        const a = document.createElement("a");
-        a.href = imageData;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-
-      // Initialize the game when the page loads
-      window.addEventListener('load', async () => {
-        await fetchBingoPhrases(); // Ensure phrases are loaded before generating card
-        generateCard();
-        // Add a save button
-        const saveButton = document.createElement('button');
-        saveButton.textContent = 'Save Photos'; // Label the button
-        saveButton.id = 'save-button';
-        saveButton.classList.add('bg-green-500', 'hover:bg-green-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'mt-4');
-        saveButton.onclick = () => {
-            if (images.length > 0) {
-                saveOptions.style.display = 'flex';
-            } else {
-                alert("No photos taken to save.");
-            }
-        }; // Call saveImages on click
-        document.querySelector('.container').appendChild(saveButton);
-
-        saveAllButton.addEventListener('click', saveAllImages);
-        saveSelectedButton.addEventListener('click', () => {
-            //add selected class
-            currentCard.forEach((card) => {
-                if(card.querySelector('img')){
-                    card.classList.toggle('selected')
-                }
-            })
-            saveSelectedImages();
-        });
       });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+      if (count === 0) return alert("No photos to save!");
+      const blob = await zip.generateAsync({type: "blob"});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = "bingo_photos.zip";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // Save Selected Photos as ZIP
+    async function saveSelectedImages() {
+      const zip = new JSZip();
+      let count = 0;
+      currentCard.forEach((card, idx) => {
+        if (card.classList.contains('ring-yellow-400') && images[idx]) {
+          zip.file(`bingo_photo_${idx + 1}.jpg`, images[idx].split(',')[1], {base64: true});
+          count++;
+        }
+      });
+      if (count === 0) return alert("Please select photos to save (click the photo squares).");
+      const blob = await zip.generateAsync({type: "blob"});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = "bingo_selected_photos.zip";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    saveButton.addEventListener('click', () => {
+      saveOptions.classList.remove('hidden');
+    });
+    saveAllButton.addEventListener('click', saveAllImages);
+    saveSelectedButton.addEventListener('click', saveSelectedImages);
+
+    window.addEventListener('load', async () => {
+      await fetchBingoPhrases();
+      generateCard();
+    });
+  </script>
 </body>
 </html>
