@@ -354,7 +354,7 @@
   <script>
     const bingoCardEl = document.getElementById('bingo-card');
     const resetButton = document.getElementById('reset-button');
-    const PHRASES_URL = 'bingo_phrases.json'; // Ensure this file exists or handle fallback
+    const PHRASES_URL = 'bingo-phrases.json'; // Ensure this file exists or handle fallback
     const bingoPopup = document.getElementById('bingo-popup');
     const saveOptions = document.getElementById('save-options');
     const saveAllButton = document.getElementById('save-all-button');
@@ -370,7 +370,7 @@
         // Adding a cache-busting query parameter for development
         const response = await fetch(PHRASES_URL + '?v=' + Date.now());
         if (!response.ok) {
-            console.error("Failed to fetch bingo_phrases.json, status:", response.status);
+            console.error("Failed to fetch bingo-phrases.json, status:", response.status);
             throw new Error('Network response was not ok');
         }
         bingoPhrases = await response.json();
@@ -379,7 +379,7 @@
             throw new Error("Empty or invalid phrases data");
         }
       } catch(error) {
-        console.warn("Could not load phrases from bingo_phrases.json. Using default phrases. Error:", error);
+        console.warn("Could not load phrases from bingo-phrases.json. Using default phrases. Error:", error);
         bingoPhrases = [
           "A unique bird", "A funny sign", "A red car", "A body of water",
           "A yellow flower", "A cat", "A dog", "A mountain", "A bridge",
