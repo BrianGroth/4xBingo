@@ -314,15 +314,6 @@
         background-color: #27ae60;
       }
 
-      #save-selected-button {
-        background-color: #3498db;
-        text-shadow: 0.0625rem 0.0625rem 0 #2980b9;
-      }
-
-      #save-selected-button:hover {
-        background-color: #2980b9;
-      }
-
       .bingo-square.selected {
         border: 0.25rem solid #f1c40f;
         box-shadow: 0 0 0.5rem #f1c40f;
@@ -338,11 +329,9 @@
     <div id="bingo-card" class="grid grid-cols-2 gap-4 w-full mb-4"></div>
     <div class="flex gap-2 w-full justify-center mb-2">
       <button id="reset-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow transition">Reset Game</button>
-      <button id="save-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded shadow transition hidden">Save Photos</button>
     </div>
     <div id="save-options" class="flex gap-2 mb-2 hidden">
       <button id="save-all-button" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded shadow transition">Save All</button>
-      <button id="save-selected-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition">Save Selected</button>
     </div>
     <div id="instructions" class="w-full mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200 text-gray-700 text-sm">
       <h2 class="text-lg font-bold mb-2 text-blue-800">How to Play</h2>
@@ -367,8 +356,6 @@
     const bingoPopup = document.getElementById('bingo-popup');
     const saveOptions = document.getElementById('save-options');
     const saveAllButton = document.getElementById('save-all-button');
-    const saveSelectedButton = document.getElementById('save-selected-button');
-    const saveButton = document.getElementById('save-button');
 
     let bingoPhrases = [];
     let currentCard = [];
@@ -400,7 +387,6 @@
       bingoCardEl.innerHTML = '';
       images = [null, null, null, null];
       saveOptions.classList.add('hidden');
-      saveButton.classList.add('hidden');
       for (let i = 0; i < 4; i++) {
         const phrase = getRandomPhrase();
         const square = document.createElement('div');
@@ -445,7 +431,6 @@
               square.classList.toggle('ring-4');
             });
             if (images.filter(Boolean).length === 4) showBingo();
-            saveButton.classList.remove('hidden');
           };
           reader.readAsDataURL(file);
         }
@@ -461,7 +446,6 @@
       setTimeout(() => {
         bingoPopup.classList.add('opacity-0', 'pointer-events-none');
         bingoPopup.classList.remove('opacity-100');
-        saveButton.classList.remove('hidden');
       }, 2500);
     }
 
@@ -484,30 +468,7 @@
       URL.revokeObjectURL(a.href);
     }
 
-    // Save Selected Photos as ZIP
-    async function saveSelectedImages() {
-      const zip = new JSZip();
-      let count = 0;
-      currentCard.forEach((card, idx) => {
-        if (card.classList.contains('ring-yellow-400') && images[idx]) {
-          zip.file(`bingo_photo_${idx + 1}.jpg`, images[idx].split(',')[1], {base64: true});
-          count++;
-        }
-      });
-      if (count === 0) return alert("Please select photos to save (click the photo squares).");
-      const blob = await zip.generateAsync({type: "blob"});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = "bingo_selected_photos.zip";
-      a.click();
-      URL.revokeObjectURL(a.href);
-    }
-
-    saveButton.addEventListener('click', () => {
-      saveOptions.classList.remove('hidden');
-    });
     saveAllButton.addEventListener('click', saveAllImages);
-    saveSelectedButton.addEventListener('click', saveSelectedImages);
 
     window.addEventListener('load', async () => {
       await fetchBingoPhrases();
