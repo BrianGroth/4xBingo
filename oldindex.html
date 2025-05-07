@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Bingo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+      :root {
+        /* Modern Font Stack */
+        --font-family-sans-serif: 'Nunito Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+
+        /* Modern Color Palette */
+        --bg-color: #f8f9fa; /* Lighter, cleaner background */
+        --container-bg-color: #ffffff;
+        --text-color: #343a40; /* Dark gray for readability */
+        --heading-color: #212529; /* Slightly darker for headings */
+        
+        --primary-color: #007bff; /* A vibrant, modern blue */
+        --primary-hover-color: #0056b3;
+        --primary-active-color: #004085;
+
+        --success-color: #28a745; /* Green for success actions */
+        --success-hover-color: #1e7e34;
+        
+        --danger-color: #dc3545; /* Red for destructive actions */
+        --danger-hover-color: #c82333;
+        --danger-active-color: #bd2130;
+
+        --warning-color: #ffc107; /* Yellow for highlights/selection */
+        --warning-darker-color: #e0a800;
+
+        --light-border-color: #dee2e6; /* Softer border color */
+        --square-bg-color: #e9ecef; /* Light gray for bingo squares */
+        --square-border-color: #ced4da;
+
+        --popup-bg-color: #fd7e14; /* Vibrant orange for Bingo popup */
+        --popup-text-color: #ffffff;
+      }
+
+      body {
+        font-family: var(--font-family-sans-serif);
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-color); /* Applied new background */
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        line-height: 1.6; /* Improved line height for readability */
+      }
+
+      .container {
+        width: 95%;
+        max-width: 800px;
+        padding: 1.5rem; /* Slightly increased padding */
+        background-color: var(--container-bg-color);
+        border-radius: 0.75rem; /* Softer radius */
+        box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.075); /* Softer shadow */
+        text-align: center;
+        margin: auto;
+      }
+
+      h1 {
+        font-size: 2rem; /* Adjusted base size */
+        font-weight: 700; /* Bolder for modern feel */
+        margin-bottom: 1rem;
+        color: var(--heading-color);
+        /* text-shadow: none; Removed for cleaner look */
+      }
+      @media (min-width: 640px) {
+        h1 {
+            font-size: 2.75rem;
+        }
+      }
+
+      #bingo-card {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem; /* Adjusted gap */
+        margin-bottom: 1.5rem;
+        width: 100%;
+      }
+      @media (min-width: 640px) {
+        #bingo-card {
+            gap: 1rem;
+        }
+      }
+
+      .bingo-square {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  min-height: 120px; /* Add this line */
+  border: 1px solid var(--square-border-color);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--square-bg-color);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+      .bingo-square:hover {
+        transform: translateY(-2px); /* Subtle lift effect */
+        box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.1);
+      }
+
+      .bingo-square img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0.4rem; /* Slightly less than square if border is visible */
+      }
+
+      /* This button is part of the initial square, before photo */
+      .bingo-square button.take-photo-btn { /* Increased specificity */
+        margin-top: 0.5rem;
+        padding: 0.5rem 1rem; /* Better padding */
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #fff;
+        background-color: var(--primary-color);
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-family: var(--font-family-sans-serif); /* Ensure font consistency */
+        /* text-shadow: none; */
+      }
+
+      .bingo-square button.take-photo-btn:hover {
+        background-color: var(--primary-hover-color);
+      }
+      .bingo-square button.take-photo-btn:active {
+        background-color: var(--primary-active-color);
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1) inset;
+        transform: translateY(1px);
+      }
+
+
+      .label {
+        font-size: 0.75rem; /* Slightly larger for better readability */
+        color: var(--text-color);
+        margin-top: 0.3rem;
+        word-wrap: break-word;
+        max-width: 90%; /* Prevent text from touching edges */
+        font-weight: 600; /* Make labels a bit more prominent */
+      }
+      @media (min-width: 640px) {
+        .label {
+            font-size: 0.875rem;
+        }
+      }
+
+      /* Styling for general buttons, will apply to reset and save options if HTML classes are minimal */
+      button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #fff;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        font-family: var(--font-family-sans-serif);
+        /* text-shadow: none; */
+      }
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      button:active {
+        transform: translateY(0px);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) inset;
+      }
+
+      #reset-button {
+        margin-top: 1rem;
+        background-color: var(--danger-color);
+      }
+      #reset-button:hover {
+        background-color: var(--danger-hover-color);
+      }
+      #reset-button:active {
+        background-color: var(--danger-active-color);
+      }
+      
+      #save-button { /* This is the button that reveals save options */
+        background-color: var(--success-color);
+      }
+      #save-button:hover {
+        background-color: var(--success-hover-color);
+      }
+
+
+      #instructions {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background-color: #fdfdfe; /* Slightly off-white for instructions box */
+        border-radius: 0.5rem;
+        border: 1px solid var(--light-border-color);
+        font-size: 0.875rem;
+        color: var(--text-color);
+        text-align: left;
+        line-height: 1.7; /* More spacing for lists */
+      }
+      @media (min-width: 640px) {
+        #instructions{
+            font-size: 0.9rem;
+        }
+      }
+
+      #instructions h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: var(--heading-color);
+        font-family: var(--font-family-sans-serif); /* Explicitly set if needed */
+        /* text-shadow: none; */
+      }
+      @media (min-width: 640px) {
+        #instructions h2{
+            font-size: 1.25rem;
+        }
+      }
+
+      #instructions ul {
+        list-style-type: disc; /* Standard disc is clean */
+        padding-left: 1.25rem; /* Standard padding */
+        margin-bottom: 0.5rem;
+      }
+
+      #instructions li {
+        margin-bottom: 0.3rem;
+      }
+
+      #bingo-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7); /* Slightly less opaque for a softer feel */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000; /* Ensure it's on top */
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out; /* Faster, smoother transition */
+        pointer-events: none;
+      }
+
+      #bingo-popup.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      #bingo-popup-content {
+        font-size: 2.5rem; /* Adjusted size */
+        font-weight: 700;
+        color: var(--popup-text-color);
+        /* text-shadow: 0 1px 3px rgba(0,0,0,0.2); Subtle shadow for depth */
+        animation: pulse 1.5s infinite; /* Slightly faster pulse */
+        border: none; /* Removed border for cleaner look, relying on bg */
+        padding: 1.5rem 2rem;
+        border-radius: 0.75rem;
+        background-color: var(--popup-bg-color); /* Using new vibrant color */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+      @media (min-width: 640px) {
+        #bingo-popup-content {
+            font-size: 3.5rem;
+        }
+      }
+
+      @keyframes pulse { /* Simplified pulse */
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+
+      /* Removed fireworks CSS as it's not directly tied to font/color, can be added back if desired */
+
+      #save-options {
+        display: flex; /* Kept from original */
+        gap: 1rem;
+        margin-top: 1rem;
+        justify-content: center;
+      }
+
+      /* Specific Save Buttons - using general button styles now, but can be specific if needed */
+      #save-all-button {
+        background-color: var(--success-color); /* Green for "Save All" */
+      }
+      #save-all-button:hover {
+        background-color: var(--success-hover-color);
+      }
+
+      #save-selected-button {
+        background-color: var(--primary-color); /* Blue for "Save Selected" */
+      }
+      #save-selected-button:hover {
+        background-color: var(--primary-hover-color);
+      }
+
+      /* The JS uses Tailwind classes like ring-yellow-400 for selection. */
+      /* This .selected class is from the original CSS. If you prefer JS-driven Tailwind rings, you can remove this. */
+      /* Otherwise, this provides a CSS-driven selection style. */
+      .bingo-square.selected,
+      .bingo-square.ring-yellow-400 { /* Harmonize with potential Tailwind class if JS adds it for selection */
+        /* border: 2px solid var(--warning-color); Using ring utility from JS might be better */
+        box-shadow: 0 0 0 3px var(--warning-color), 0 0 10px var(--warning-color); /* Example: Custom glow */
+      }
+      .bingo-square.selected img {
+        /* box-shadow: 0 0 0.5rem var(--warning-darker-color); */ /* Might be too much with square shadow */
+      }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-yellow-100 min-h-screen flex items-center justify-center">
+  <div class="container mx-auto max-w-xl p-6 bg-white/90 rounded-2xl shadow-2xl flex flex-col items-center">
+    <h1 class="text-3xl sm:text-4xl font-extrabold mb-4 text-blue-900 drop-shadow">Photo Bingo</h1>
+    <div id="bingo-card" class="grid grid-cols-2 gap-4 w-full mb-4"></div>
+    <div class="flex gap-2 w-full justify-center mb-2">
+      <button id="reset-button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow transition">Reset Game</button>
+      <button id="save-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded shadow transition hidden"></button>  
+    </div>
+    <div id="save-options" class="flex gap-2 mb-2 hidden">
+      <button id="save-all-button" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded shadow transition">Save All</button>
+      <button id="save-selected-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition">Save Selected</button>
+    </div>
+    <div id="instructions" class="w-full mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200 text-gray-700 text-sm">
+      <h2 class="text-lg font-bold mb-2 text-blue-800">How to Play</h2>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Each player gets a bingo card with 4 squares.</li>
+        <li>Each square has a word describing something to find and photograph.</li>
+        <li>When you spot the item, tap the square and take a photo.</li>
+        <li>The photo will appear in the square.</li>
+        <li>The goal is to fill all 4 squares (get a "bingo")!</li>
+        <li>Tap "Reset Game" to start a new game.</li>
+      </ul>
+    </div>
+    <div id="bingo-popup" class="fixed inset-0 flex flex-col items-center justify-center bg-black/80 z-50 opacity-0 pointer-events-none transition-opacity duration-500">
+      <div id="bingo-popup-content" class="text-4xl sm:text-5xl font-extrabold text-yellow-300 drop-shadow-lg border-4 border-white p-6 rounded-xl bg-orange-600 animate-pulse">Bingo!</div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    const bingoCardEl = document.getElementById('bingo-card');
+    const resetButton = document.getElementById('reset-button');
+    const PHRASES_URL = 'bingo-phrases.json'; // Ensure this file exists or handle fallback
+    const bingoPopup = document.getElementById('bingo-popup');
+    const saveOptions = document.getElementById('save-options');
+    const saveAllButton = document.getElementById('save-all-button');
+    const saveSelectedButton = document.getElementById('save-selected-button');
+    const saveButton = document.getElementById('save-button'); // This button reveals the other save options
+
+    let bingoPhrases = [];
+    let currentCardSquares = []; // To store references to the square DOM elements
+    let images = [null, null, null, null]; // Always 4 slots
+
+    async function fetchBingoPhrases() {
+      try {
+        // Adding a cache-busting query parameter for development
+        const response = await fetch(PHRASES_URL + '?v=' + Date.now());
+        if (!response.ok) {
+            console.error("Failed to fetch bingo-phrases.json, status:", response.status);
+            throw new Error('Network response was not ok');
+        }
+        bingoPhrases = await response.json();
+        if (!Array.isArray(bingoPhrases) || bingoPhrases.length === 0) {
+            console.warn("Bingo phrases loaded, but the array is empty or not an array. Using fallback.");
+            throw new Error("Empty or invalid phrases data");
+        }
+      } catch(error) {
+        console.warn("Could not load phrases from bingo-phrases.json. Using default phrases. Error:", error);
+        bingoPhrases = [
+          "A unique bird", "A funny sign", "A red car", "A body of water",
+          "A yellow flower", "A cat", "A dog", "A mountain", "A bridge",
+          "A statue", "A historic building", "A local food", "A street performer",
+          "A piece of street art", "A beautiful sunset", "Something blue", "A tall tree",
+          "A bicycle", "A cloud formation", "A reflection"
+        ];
+      }
+    }
+    
+    // Make a copy of phrases for the current game to avoid depleting the main list if not refetched
+    let gamePhrases = [];
+
+    function getRandomPhrase() {
+      if (gamePhrases.length === 0) { // If current game phrases run out, repopulate from master (or use a generic)
+          if(bingoPhrases.length > 0) {
+              gamePhrases = [...bingoPhrases]; // Repopulate for the current game
+          } else {
+            return "Something interesting"; // Absolute fallback
+          }
+      }
+      const idx = Math.floor(Math.random() * gamePhrases.length);
+      return gamePhrases.splice(idx, 1)[0];
+    }
+
+    function generateCard() {
+      currentCardSquares = [];
+      bingoCardEl.innerHTML = '';
+      images = [null, null, null, null];
+      saveOptions.classList.add('hidden'); // Hide save options
+      saveButton.classList.add('hidden');   // Hide main save button initially
+
+      // Repopulate gamePhrases for the new card from the master list
+      if (bingoPhrases.length > 0) {
+        gamePhrases = [...bingoPhrases];
+      } else {
+        // Fallback if master list is somehow empty (e.g., initial fetch failed badly)
+        gamePhrases = [
+          "A unique bird", "A funny sign", "A red car", "A body of water",
+          "A yellow flower", "A cat", "A dog", "A mountain", "A bridge",
+          "A statue", "A historic building", "A local food", "A street performer",
+          "A piece of street art", "A beautiful sunset", "Something blue", "A tall tree",
+          "A bicycle", "A cloud formation", "A reflection"
+        ];
+      }
+
+
+      for (let i = 0; i < 4; i++) {
+        const phrase = getRandomPhrase();
+        const square = document.createElement('div');
+        // Using CSS classes from the <style> block primarily now
+        square.className = "bingo-square"; // Basic class, specific styling in CSS
+        square.setAttribute('data-phrase', phrase);
+        square.setAttribute('data-index', i); // Keep track of index
+
+        square.innerHTML = `
+          <p class="label">${phrase}</p>
+          <button class="take-photo-btn">Take Photo</button>
+        `;
+        
+        // Event listener for selecting/deselecting after a photo is added
+        square.addEventListener('click', () => {
+          if (images[i]) { // Only allow selection if there's an image
+            square.classList.toggle('selected'); // Uses .selected from CSS
+             // If you use Tailwind rings for selection, manage those classes here too:
+             // square.classList.toggle('ring-4');
+             // square.classList.toggle('ring-yellow-400'); // Or your chosen selection ring color
+          }
+        });
+
+        square.querySelector('.take-photo-btn').addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent square's own click listener
+          capturePhoto(i, square);
+        });
+
+        bingoCardEl.appendChild(square);
+        currentCardSquares.push(square);
+      }
+    }
+
+    function capturePhoto(idx, square) {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      // For mobile, to prefer camera:
+      // input.capture = 'environment'; // or 'user' for selfie
+
+      input.onchange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            images[idx] = e.target.result;
+            square.innerHTML = `
+              <img src="${e.target.result}" alt="User Photo for ${square.getAttribute('data-phrase')}">
+              <p class="label">${square.getAttribute('data-phrase')}</p>
+            `;
+            // You might want a visual cue that it's "completed" but not necessarily "selected"
+            // square.classList.add('completed'); // Add a class if you want to style completed squares differently
+            
+            // Check for Bingo
+            if (images.filter(Boolean).length === 4) {
+              showBingo();
+            }
+            // Show save button if at least one photo is taken
+            if (images.some(img => img !== null)) {
+                saveButton.classList.remove('hidden');
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+    }
+
+    resetButton.addEventListener('click', async () => {
+        // Optionally re-fetch phrases if you want them to update without a page reload
+        // await fetchBingoPhrases(); 
+        generateCard();
+    });
+
+    function showBingo() {
+      bingoPopup.classList.add('show');
+      // Consider adding fireworks or other animations here if desired
+      setTimeout(() => {
+        bingoPopup.classList.remove('show');
+      }, 3000); // Increased duration for Bingo! message
+    }
+
+    saveButton.addEventListener('click', () => {
+        // Toggle visibility of detailed save options
+        saveOptions.classList.toggle('hidden');
+    });
+    
+    async function downloadZip(filesToZip, zipFileName) {
+        if (filesToZip.length === 0) {
+            alert("No photos to save!");
+            return;
+        }
+
+        const zip = new JSZip();
+        filesToZip.forEach(fileData => {
+            zip.file(fileData.name, fileData.data.split(',')[1], { base64: true });
+        });
+
+        const blob = await zip.generateAsync({ type: "blob" });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = zipFileName;
+        document.body.appendChild(a); // Required for Firefox
+        a.click();
+        URL.revokeObjectURL(a.href);
+        document.body.removeChild(a);
+        
+        // Hide save options after download
+        saveOptions.classList.add('hidden');
+    }
+
+
+    saveAllButton.addEventListener('click', async () => {
+        const filesToSave = [];
+        images.forEach((imgData, idx) => {
+            if (imgData) {
+                const phrase = currentCardSquares[idx] ? currentCardSquares[idx].getAttribute('data-phrase') : `photo_${idx + 1}`;
+                const fileName = `${phrase.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.jpg`;
+                filesToSave.push({ name: fileName, data: imgData });
+            }
+        });
+        await downloadZip(filesToSave, "bingo_all_photos.zip");
+    });
+
+    saveSelectedButton.addEventListener('click', async () => {
+        const filesToSave = [];
+        currentCardSquares.forEach((square, idx) => {
+            // Check for the '.selected' class or any other selection indicator you use
+            if (square.classList.contains('selected') && images[idx]) {
+                const phrase = square.getAttribute('data-phrase') || `selected_photo_${idx + 1}`;
+                const fileName = `${phrase.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.jpg`;
+                filesToSave.push({ name: fileName, data: images[idx] });
+            }
+        });
+        if (filesToSave.length === 0) {
+            alert("No photos selected. Click on the photos you want to save.");
+            return;
+        }
+        await downloadZip(filesToSave, "bingo_selected_photos.zip");
+    });
+
+    // Initial setup
+    window.addEventListener('load', async () => {
+      await fetchBingoPhrases();
+      generateCard();
+    });
+  </script>
+</body>
+</html>
